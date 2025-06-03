@@ -22,7 +22,7 @@ app.use(cors());
 console.log('Environment:', ENV.APP);
 
 //DATABASE
-// connectDB();
+connectDB();
 
 // Init Middleware
 app.use(logger('dev'));
@@ -36,16 +36,6 @@ app.get('/ping', (req, res) =>
 //node cron job
 
 //cron job is running Every day 6:30 am
-
-// cron.schedule(
-//   ENV.SMTP_MAIL_TIME,
-//   () => {
-//     sendEmail();
-//   },
-//   {
-//     scheduled: true,
-//   }
-// );
 
 //ROUTES
 routes.map((route) => app.use(route.path, require(`./routes/${route.file}`)));

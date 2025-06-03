@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 // const path = require('path');
 const { db } = require('../models/index');
 const cron = require('node-cron');
+const { createExcel } = require('../middleware/createExcel');
 
 const sendEmail = async (req, res) => {
   const {
@@ -39,14 +40,23 @@ const sendEmail = async (req, res) => {
         to: toMail,
         subject: mailSubject,
         html: html,
-        // attachments: [
-        //   {
-        //     // mail logo attachement
-        //     filename: 'mailLogo.png',
-        //     path: path.join(__dirname, '../Images/simmonds_logo.png'),
-        //     cid: 'mailLogo',
-        //   },
-        // ],
+        attachments: [
+          // {
+          //   // File as an attachment
+          //   filename: 'DownTime Details.xlsx', // name the file will have in the email
+          //   path: createExcel(
+          //     downtimeDetails[0],
+          //     'downTimeDetails',
+          //     'DownTime Details'
+          //   ), // path to the file you want to attach
+          // },
+          {
+            // mail logo attachement
+            filename: 'mailLogo.png',
+            path: path.join(__dirname, '../Images/e2m_log.png'),
+            cid: 'mailLogo',
+          },
+        ],
       };
 
       // Send the email
