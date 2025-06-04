@@ -22,7 +22,7 @@ app.use(cors());
 console.log('Environment:', ENV.APP);
 
 //DATABASE
-connectDB();
+// connectDB();
 
 // Init Middleware
 app.use(logger('dev'));
