@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const path = require('path');
 const cron = require('node-cron');
 
 const sendEmail = async (req, res) => {
@@ -36,6 +37,15 @@ const sendEmail = async (req, res) => {
         subject: mailSubject,
         html: html,
         attachments: [
+          // {
+          //   // File as an attachment
+          //   filename: 'DownTime Details.xlsx', // name the file will have in the email
+          //   path: createExcel(
+          //     downtimeDetails[0],
+          //     'downTimeDetails',
+          //     'DownTime Details'
+          //   ), // path to the file you want to attach
+          // },
           {
             // mail logo attachement
             filename: 'mailLogo.png',
