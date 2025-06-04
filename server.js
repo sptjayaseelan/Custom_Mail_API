@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const logger = require('morgan');
 const cors = require('cors');
+const ENV = require('./data/env');
 const routes = require('./routes/index');
 
 //const path = require('path');
