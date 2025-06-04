@@ -1,6 +1,11 @@
 const nodemailer = require('nodemailer');
 const path = require('path');
 const cron = require('node-cron');
+const validator = require('email-validator');
+
+const isValidEmailAddress = (mailId) => {
+  return validator.validate(mailId);
+};
 
 const sendEmail = async (req, res) => {
   const {
@@ -11,14 +16,46 @@ const sendEmail = async (req, res) => {
     smtpSecure,
     fromMail,
     toMail,
+    cc,
+    bcc,
     mailSubject,
     html,
     schedule,
     scheduleTime,
     attachments,
+    logoName,
   } = req.body;
   try {
     const mailSetting = () => {
+      if (!isValidEmailAddress(fromMail)) {
+        return res
+          .status(400)
+          .json({ msg: `Invalid Email Address from Mail Id ${fromMail}` });
+      } else if (!isValidEmailAddress(toMail)) {
+        return res
+          .status(400)
+          .json({ msg: `Invalid Email Address toMail Id ${toMail}` });
+      }
+
+      if (
+        toMail === '' ||
+        toMail === null ||
+        fromMail === '' ||
+        fromMail === null ||
+        smtpHost === '' ||
+        smtpHost === null ||
+        smtpPort === '' ||
+        smtpPort === null ||
+        smtpUserName === '' ||
+        smtpUserName === null ||
+        smtpPassword === '' ||
+        smtpPassword === null ||
+        smtpSecure === '' ||
+        smtpSecure === null
+      ) {
+        return res.status(400).json({ msg: 'Missing Required Fields' });
+      }
+
       let transport = nodemailer.createTransport({
         //   service: 'smtp.gmail.com',
         host: smtpHost,
@@ -34,31 +71,27 @@ const sendEmail = async (req, res) => {
       let mailOptions = {
         from: fromMail,
         to: toMail,
+        cc: cc,
+        bcc: bcc,
         subject: mailSubject,
         html: html,
-        attachments: [
-          // {
-          //   // File as an attachment
-          //   filename: 'DownTime Details.xlsx', // name the file will have in the email
-          //   path: createExcel(
-          //     downtimeDetails[0],
-          //     'downTimeDetails',
-          //     'DownTime Details'
-          //   ), // path to the file you want to attach
-          // },
+      };
+      if (Number(logoName) !== 1) {
+        mailOptions.attachments = [
           {
             // mail logo attachement
-            filename: 'mailLogo.png',
-            path: path.join(__dirname, '../Images/e2m_log.png'),
-            cid: 'mailLogo',
+            filename: `${logoName}.png`,
+            path: path.join(__dirname, `../Images/${logoName}.png`),
+            cid: `${logoName}`,
           },
-        ],
-      };
+        ];
+      }
 
       // Send the email
-      transport.sendMail(mailOptions, async (error, info) => {
+      transport.sendMail(mailOptions, async (error) => {
         if (error) {
-          return console.log('error', error);
+          console.log('error', error);
+          return res.status(500).json({ msg: `Server Error ${error}` });
         }
         return res.status(200).json({ msg: 'Email Sent SuccessFully' });
       });
@@ -79,7 +112,7 @@ const sendEmail = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msg: 'Server Error' });
+    return res.status(500).json({ msg: `Server Error ${error}` });
   }
 };
 

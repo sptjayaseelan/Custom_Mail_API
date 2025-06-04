@@ -5,6 +5,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const ENV = require('./data/env');
 const routes = require('./routes/index');
+const { default: rateLimit } = require('express-rate-limit');
 
 //const path = require('path');
 
@@ -29,12 +30,19 @@ app.get('/ping', (req, res) =>
   res.status(200).send('Server working perfectly')
 );
 
-//node cron job
-
-//cron job is running Every day 6:30 am
+// limit of mails in one hour
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: 'Too many requests, please try again later.',
+});
 
 //ROUTES
-routes.map((route) => app.use(route.path, require(`./routes/${route.file}`)));
+routes.map((route) =>
+  route.rateLimit
+    ? app.use(route.path, limiter, require(`./routes/${route.file}`))
+    : app.use(route.path, require(`./routes/${route.file}`))
+);
 
 //PORT CONNECTIONS
 app.listen(ENV.PORT, () => {
