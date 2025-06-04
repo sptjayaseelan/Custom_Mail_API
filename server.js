@@ -3,11 +3,6 @@ const express = require('express');
 const app = express();
 const logger = require('morgan');
 const cors = require('cors');
-const connectDB = require('./config/db');
-
-const ENV = require('./data/env');
-const cron = require('node-cron');
-const { sendEmail } = require('./controllers/sendEmail');
 const routes = require('./routes/index');
 
 //const path = require('path');

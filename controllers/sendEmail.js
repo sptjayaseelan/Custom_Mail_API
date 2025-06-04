@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-const { db } = require('../models/index');
 const cron = require('node-cron');
 
 const sendEmail = async (req, res) => {
